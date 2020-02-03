@@ -1,0 +1,118 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+#root {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#main-container {
+  width: 40vh;
+  height: 60vh;
+  display: grid;
+  grid-template-areas:
+    "display display display display"
+    "add subtract multiply divide"
+    "seven eight nine clear"
+    "four five six clear"
+    "one two three ."
+    "zero zero decimal equals";
+  background: linear-gradient(90deg, rgb(254, 234, 204), rgb(225, 234, 249));
+  border-radius: 25px;
+  padding-bottom: 10px;
+  box-shadow: 7px 5px 20px 0px rgba(0, 0, 0, 0.2);
+}
+
+button {
+  border: none;
+  background-color: rgb(255, 255, 255, 0.01);
+  font-size: 1.2em;
+}
+#display {
+  grid-area: display;
+  height: 25vh;
+  font-size: 4em;
+  font-weight: 300;
+  text-align: end;
+  padding-top: 7vh;
+  padding-right: 15px;
+  padding-bottom: 15px;
+}
+
+#operations-display {
+  font-size: 18px;
+}
+
+.operationsButton {
+  color: rgb(223, 28, 106);
+  height: 5vh;
+  width: 5vh;
+  font-weight: 600;
+  justify-self: center;
+}
+
+#add {
+  grid-area: add;
+}
+#subtract {
+  grid-area: subtract;
+}
+#multiply {
+  grid-area: multiply;
+}
+#divide {
+  grid-area: divide;
+}
+#seven {
+  grid-area: seven;
+}
+
+#eight {
+  grid-area: eight;
+}
+#nine {
+  grid-area: nine;
+}
+#clear {
+  grid-area: clear;
+}
+#four {
+  grid-area: four;
+}
+#five {
+  grid-area: five;
+}
+#six {
+  grid-area: six;
+}
+
+#one {
+  grid-area: one;
+}
+#two {
+  grid-area: two;
+}
+#three {
+  grid-area: three;
+}
+#equals {
+  grid-area: equals;
+  border-radius: 50%;
+  background-color: rgb(223, 28, 106);
+  color: white;
+  width: 6vh;
+  height: 6vh;
+  display: block;
+  margin: auto;
+}
+
+#zero {
+  grid-area: zero;
+}
+#decimal {
+  grid-area: decimal;
+}

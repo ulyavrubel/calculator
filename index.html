@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://unpkg.com/react@16.0.0-rc.3/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16.0.0-rc.3/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.6.0/prop-types.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap&subset=latin-ext"
+      rel="stylesheet"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+
+    <title>Calculator</title>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      function App() {
+        return <Calculator />;
+      }
+
+      const numbers = {
+        zero: 0,
+        one: 1,
+        two: 2,
+        three: 3,
+        four: 4,
+        five: 5,
+        six: 6,
+        seven: 7,
+        eight: 8,
+        nine: 9,
+        decimal: "."
+      };
+
+      const mathOperations = /[-+/*]/;
+
+      const findLastNumbers = arr => {
+        let newArr = [];
+
+        for (let i = arr.length - 1; i >= 0; i--) {
+          if (mathOperations.test(arr[i])) {
+            break;
+          }
+          newArr.push(arr[i]);
+        }
+
+        return newArr.reverse();
+      };
+
+      const deleteLastSigns = arr => {
+        let newArr = [...arr];
+
+        for (let i = arr.length - 1; i >= 0; i--) {
+          if (mathOperations.test(arr[i])) {
+            newArr.pop();
+          }
+        }
+        return newArr;
+      };
+
+      class Calculator extends React.Component {
+        constructor() {
+          super();
+          this.state = {
+            display: "0",
+            operationsDisplay: []
+          };
+
+          this.handleClickNumber = this.handleClickNumber.bind(this);
+          this.handleClickMath = this.handleClickMath.bind(this);
+          this.handleClickEquals = this.handleClickEquals.bind(this);
+          this.handleClickClear = this.handleClickClear.bind(this);
+          this.handleClickMinus = this.handleClickMinus.bind(this);
+        }
+
+        handleClickNumber(event) {
+          if (event.target.id === "zero" && this.state.display === "0") {
+            return null;
+          }
+          let lastSign = this.state.operationsDisplay[
+            this.state.operationsDisplay.length - 1
+          ];
+          if (event.target.id === "decimal" && lastSign === ".") {
+            return null;
+          }
+          let newNum = numbers[event.target.id];
+          this.setState(prevState => {
+            let newArr = findLastNumbers(prevState.operationsDisplay);
+            return {
+              operationsDisplay: [...prevState.operationsDisplay, newNum],
+              display: [...newArr, newNum].join("")
+            };
+          });
+        }
+
+        handleClickMath(event) {
+          let { name } = event.target;
+
+          let lastSign = this.state.operationsDisplay[
+            this.state.operationsDisplay.length - 1
+          ];
+
+          const mathOp = /[+-/*]/;
+
+          if (/\d/.test(lastSign)) {
+            //последний знак - число
+            this.setState(prevState => {
+              return {
+                operationsDisplay: [...prevState.operationsDisplay, name],
+                display: name
+              };
+            });
+          } else if ((lastSign = "-")) {
+            this.setState(prevState => {
+              let newArr = deleteLastSigns(prevState.operationsDisplay);
+              return {
+                operationsDisplay: [...newArr, name],
+                display: name
+              };
+            });
+          } else {
+            this.setState(prevState => {
+              //последний знак +/*
+              prevState.operationsDisplay.pop();
+              console.log(prevState.operationsDisplay);
+              return {
+                operationsDisplay: [...prevState.operationsDisplay, name],
+                display: name
+              };
+            });
+          }
+        }
+
+        handleClickMinus(event) {
+          let lastSign = this.state.operationsDisplay[
+            this.state.operationsDisplay.length - 1
+          ];
+
+          if (/[\d]/.test(lastSign)) {
+            this.handleClickMath(event);
+          } else {
+            if (lastSign === "-") {
+            } else if (
+              lastSign === "+" ||
+              lastSign === "*" ||
+              lastSign === "/"
+            ) {
+              this.setState(prevState => {
+                return {
+                  operationsDisplay: [...prevState.operationsDisplay, "-"]
+                };
+              });
+              this.handleClickNumber(event);
+            }
+          }
+        }
+
+        handleClickEquals() {
+          this.setState(prevState => {
+            return {
+              operationsDisplay: [],
+              display: eval(this.state.operationsDisplay.join(""))
+            };
+          });
+        }
+
+        handleClickClear() {
+          this.setState({ display: "0", operationsDisplay: [] });
+        }
+
+        render() {
+          return (
+            <div id="main-container">
+              <div id="display">
+                <p id="operations-display">{this.state.operationsDisplay}</p>
+                {this.state.display}
+              </div>
+
+              <button onClick={this.handleClickNumber} id="seven">
+                7
+              </button>
+              <button onClick={this.handleClickNumber} id="eight">
+                8
+              </button>
+              <button onClick={this.handleClickNumber} id="nine">
+                9
+              </button>
+              <button onClick={this.handleClickNumber} id="four">
+                4
+              </button>
+              <button onClick={this.handleClickNumber} id="five">
+                5
+              </button>
+              <button onClick={this.handleClickNumber} id="six">
+                6
+              </button>
+              <button onClick={this.handleClickNumber} id="one">
+                1
+              </button>
+              <button onClick={this.handleClickNumber} id="two">
+                2
+              </button>
+              <button onClick={this.handleClickNumber} id="three">
+                3
+              </button>
+              <button onClick={this.handleClickNumber} id="zero">
+                0
+              </button>
+
+              <button
+                onClick={this.handleClickMath}
+                className="operationsButton"
+                id="add"
+                name="+"
+              >
+                +
+              </button>
+              <button
+                onClick={this.handleClickMinus}
+                className="operationsButton"
+                id="subtract"
+                name="-"
+              >
+                -
+              </button>
+              <button
+                onClick={this.handleClickMath}
+                className="operationsButton"
+                id="multiply"
+                name="*"
+              >
+                *
+              </button>
+              <button
+                onClick={this.handleClickMath}
+                className="operationsButton"
+                id="divide"
+                name="/"
+              >
+                /
+              </button>
+
+              <button id="decimal" onClick={this.handleClickNumber}>
+                .
+              </button>
+
+              <button onClick={this.handleClickClear} id="clear">
+                c
+              </button>
+
+              <button onClick={this.handleClickEquals} id="equals">
+                =
+              </button>
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
