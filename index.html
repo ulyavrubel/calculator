@@ -57,13 +57,14 @@
         decimal: "."
       };
 
-      const mathOperations = /[-+/*]/;
+      const mathOperations = /[+/*]/;
 
       const findLastNumbers = arr => {
         let newArr = [];
+        console.log("findLastNumbers");
 
         for (let i = arr.length - 1; i >= 0; i--) {
-          if (mathOperations.test(arr[i])) {
+          if (/[-+/*]/.test(arr[i])) {
             break;
           }
           newArr.push(arr[i]);
@@ -73,8 +74,11 @@
       };
 
       const deleteLastSigns = arr => {
+        console.log("deleteLastSigns");
         let newArr = [...arr];
-
+        console.log(arr);
+        newArr.pop();
+        console.log(newArr);
         for (let i = arr.length - 1; i >= 0; i--) {
           if (mathOperations.test(arr[i])) {
             newArr.pop();
@@ -124,6 +128,7 @@
           let lastSign = this.state.operationsDisplay[
             this.state.operationsDisplay.length - 1
           ];
+          console.log(lastSign);
 
           const mathOp = /[+-/*]/;
 
@@ -135,24 +140,27 @@
                 display: name
               };
             });
-          } else if ((lastSign = "-")) {
-            this.setState(prevState => {
-              let newArr = deleteLastSigns(prevState.operationsDisplay);
-              return {
-                operationsDisplay: [...newArr, name],
-                display: name
-              };
-            });
           } else {
-            this.setState(prevState => {
-              //последний знак +/*
-              prevState.operationsDisplay.pop();
-              console.log(prevState.operationsDisplay);
-              return {
-                operationsDisplay: [...prevState.operationsDisplay, name],
-                display: name
-              };
-            });
+            if (lastSign === "-") {
+              console.log("last sisgn not number its -");
+              this.setState(prevState => {
+                let newArr = deleteLastSigns(prevState.operationsDisplay);
+                return {
+                  operationsDisplay: [...newArr, name],
+                  display: name
+                };
+              });
+            } else {
+              console.log("last sisgn not number, not - its smth else");
+              this.setState(prevState => {
+                let newArr = [...prevState.operationsDisplay];
+                newArr.pop();
+                return {
+                  operationsDisplay: [...newArr, name],
+                  display: name
+                };
+              });
+            }
           }
         }
 
@@ -164,18 +172,13 @@
           if (/[\d]/.test(lastSign)) {
             this.handleClickMath(event);
           } else {
-            if (lastSign === "-") {
-            } else if (
-              lastSign === "+" ||
-              lastSign === "*" ||
-              lastSign === "/"
-            ) {
+            if (lastSign === "+" || lastSign === "*" || lastSign === "/") {
               this.setState(prevState => {
                 return {
-                  operationsDisplay: [...prevState.operationsDisplay, "-"]
+                  operationsDisplay: [...prevState.operationsDisplay, "-"],
+                  display: "-"
                 };
               });
-              this.handleClickNumber(event);
             }
           }
         }
@@ -196,10 +199,8 @@
         render() {
           return (
             <div id="main-container">
-              <div id="display">
-                <p id="operations-display">{this.state.operationsDisplay}</p>
-                {this.state.display}
-              </div>
+              <p id="operations-display">{this.state.operationsDisplay}</p>
+              <div id="display">{this.state.display}</div>
 
               <button onClick={this.handleClickNumber} id="seven">
                 7
