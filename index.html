@@ -61,30 +61,31 @@
 
       const findLastNumbers = arr => {
         let newArr = [];
-        console.log("findLastNumbers");
-
         for (let i = arr.length - 1; i >= 0; i--) {
           if (/[-+/*]/.test(arr[i])) {
             break;
           }
           newArr.push(arr[i]);
         }
-
         return newArr.reverse();
       };
 
       const deleteLastSigns = arr => {
-        console.log("deleteLastSigns");
         let newArr = [...arr];
-        console.log(arr);
         newArr.pop();
-        console.log(newArr);
         for (let i = arr.length - 1; i >= 0; i--) {
           if (mathOperations.test(arr[i])) {
             newArr.pop();
           }
         }
         return newArr;
+      };
+
+      const countDecimals = value => {
+        if (Math.floor(value) === value) {
+          return 0;
+        }
+        return value.toString().split(".")[1].length || 0;
       };
 
       class Calculator extends React.Component {
@@ -109,9 +110,21 @@
           let lastSign = this.state.operationsDisplay[
             this.state.operationsDisplay.length - 1
           ];
-          if (event.target.id === "decimal" && lastSign === ".") {
+          if (
+            event.target.id === "decimal" &&
+            this.state.display.includes(".")
+          ) {
             return null;
           }
+
+          if (
+            event.target.id === "decimal" &&
+            this.state.display === "0" &&
+            this.state.operationsDisplay[0] === undefined
+          ) {
+            this.setState({ display: "0", operationsDisplay: ["0"] });
+          }
+
           let newNum = numbers[event.target.id];
           this.setState(prevState => {
             let newArr = findLastNumbers(prevState.operationsDisplay);
@@ -128,12 +141,10 @@
           let lastSign = this.state.operationsDisplay[
             this.state.operationsDisplay.length - 1
           ];
-          console.log(lastSign);
 
-          const mathOp = /[+-/*]/;
+          // const mathOp = /[+-/*]/;
 
           if (/\d/.test(lastSign)) {
-            //последний знак - число
             this.setState(prevState => {
               return {
                 operationsDisplay: [...prevState.operationsDisplay, name],
@@ -142,7 +153,6 @@
             });
           } else {
             if (lastSign === "-") {
-              console.log("last sisgn not number its -");
               this.setState(prevState => {
                 let newArr = deleteLastSigns(prevState.operationsDisplay);
                 return {
@@ -150,8 +160,11 @@
                   display: name
                 };
               });
-            } else {
-              console.log("last sisgn not number, not - its smth else");
+            } else if (
+              lastSign === "+" ||
+              lastSign === "*" ||
+              lastSign === "/"
+            ) {
               this.setState(prevState => {
                 let newArr = [...prevState.operationsDisplay];
                 newArr.pop();
@@ -160,11 +173,21 @@
                   display: name
                 };
               });
+            } else if (lastSign === undefined) {
+              this.setState(prevState => {
+                let newArr = [];
+                return {
+                  operationsDisplay: [...newArr, prevState.display, name],
+                  display: name
+                };
+              });
             }
           }
         }
 
         handleClickMinus(event) {
+          let { name } = event.target;
+
           let lastSign = this.state.operationsDisplay[
             this.state.operationsDisplay.length - 1
           ];
@@ -179,15 +202,37 @@
                   display: "-"
                 };
               });
+            } else if (lastSign === undefined) {
+              this.setState(prevState => {
+                let newArr = [];
+                return {
+                  operationsDisplay: [...newArr, prevState.display, name],
+                  display: name
+                };
+              });
             }
           }
         }
 
         handleClickEquals() {
+          let lastSign = this.state.operationsDisplay[
+            this.state.operationsDisplay.length - 1
+          ];
+
+          if (!/\d/.test(lastSign)) {
+            return null;
+          }
+
+          let result = eval(this.state.operationsDisplay.join(""));
+
+          if (countDecimals(result) > 4) {
+            result = result.toFixed(5);
+          }
+
           this.setState(prevState => {
             return {
               operationsDisplay: [],
-              display: eval(this.state.operationsDisplay.join(""))
+              display: result
             };
           });
         }
@@ -201,6 +246,7 @@
             <div id="main-container">
               <p id="operations-display">{this.state.operationsDisplay}</p>
               <div id="display">{this.state.display}</div>
+              <div id="line"></div>
 
               <button onClick={this.handleClickNumber} id="seven">
                 7
@@ -275,7 +321,7 @@
               </button>
 
               <button onClick={this.handleClickEquals} id="equals">
-                =
+                <span>=</span>
               </button>
             </div>
           );

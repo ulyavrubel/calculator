@@ -12,10 +12,12 @@ body {
 
 #main-container {
   width: 40vh;
-  height: 60vh;
+  height: 65vh;
   display: grid;
   grid-template-areas:
+    "operations-display operations-display operations-display operations-display"
     "display display display display"
+    "line line line line"
     "add subtract multiply divide"
     "seven eight nine clear"
     "four five six clear"
@@ -24,27 +26,42 @@ body {
   background: linear-gradient(90deg, rgb(254, 234, 204), rgb(225, 234, 249));
   border-radius: 25px;
   padding-bottom: 10px;
-  box-shadow: 7px 5px 20px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 5px 3px 9px 0px rgba(0, 0, 0, 0.1);
 }
 
 button {
   border: none;
   background-color: rgb(255, 255, 255, 0.01);
   font-size: 1.2em;
+  width: 10vh;
 }
 #display {
   grid-area: display;
-  height: 25vh;
-  font-size: 4em;
+  font-size: 3em;
   font-weight: 300;
   text-align: end;
-  padding-top: 7vh;
   padding-right: 15px;
   padding-bottom: 15px;
 }
 
 #operations-display {
+  grid-area: operations-display;
   font-size: 18px;
+  height: 18vh;
+  font-size: 1em;
+  font-weight: 300;
+  text-align: end;
+  padding-top: 15vh;
+  padding-right: 15px;
+  margin: 0 0 0 0;
+}
+
+#line {
+  grid-area: line;
+  border-top: 1px solid #2125297e;
+  margin-right: 15px;
+  margin-left: 15px;
+  padding-bottom: 20px;
 }
 
 .operationsButton {
@@ -108,6 +125,13 @@ button {
   height: 6vh;
   display: block;
   margin: auto;
+  box-shadow: 3px 2px 10px 0px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  font-size: 1.5em;
+}
+#equals span {
+  line-height: 1.5em;
+  /* padding-top: 2.5vh; */
 }
 
 #zero {
